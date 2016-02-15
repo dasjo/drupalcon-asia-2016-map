@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>DrupalCon Asia 2016 Map</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>
+  <link href='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css' rel='stylesheet' />
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+
+    .leaflet-marker-icon {
+      width: 34px;
+      height: 34px;
+      margin-left: 3px;
+      margin-top: 3px;
+      border-radius: 17px;
+    }
+
+    img.leaflet-marker-icon {
+      border-radius: 10px;
+      border: 3px solid #222;
+      height: 50px;
+      width: auto;
+      background-color: #bdd7d1;
+    }
+    img.leaflet-marker-icon:hover {
+      border: 3px solid #fff;
+      background-color: #f0f0f0;
+    }
+
+  </style>
+</head>
+<body>
+
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet' />
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' />
+
+<div id='map'></div>
+
+<script>
+  L.mapbox.accessToken = 'pk.eyJ1IjoiYW1hemVlIiwiYSI6IjZRRjIwbFEifQ.Hp-wmc_tLxw7dlbcB8aaIg';
+  var map = L.mapbox.map('map', 'mapbox.light');
+
+  // As with any other AJAX request, this technique is subject to the Same Origin Policy:
+  // http://en.wikipedia.org/wiki/Same_origin_policy
+  // So the CSV file must be on the same domain as the Javascript, or the server
+  // delivering it should support CORS.
+  var featureLayer = L.mapbox.featureLayer()
+    .loadURL('http://dasjo.github.io/drupalcon-asia-2016-map/data.geojson')
+    .on('ready', function(e) {
+      // The clusterGroup gets each marker in the group added to it
+      // once loaded, and then is added to the map
+      var clusterGroup = new L.MarkerClusterGroup();
+
+      e.target.eachLayer(function(layer) {
+        var content = '<a href="' + layer.feature.properties.Link + '" target="_blank">' + layer.feature.properties["Name"] + '</a>';
+        layer.bindPopup(content);
+        layer.setIcon(L.icon({
+          iconUrl: layer.feature.properties.Pic,
+        }));
+        clusterGroup.addLayer(layer);
+      });
+      map.addLayer(clusterGroup);
+      map.fitBounds(clusterGroup.getBounds());
+      var credits = L.control.attribution().addTo(map);
+      credits.addAttribution("<a href='https://events.drupal.org/asia2016/community'>DrupalCon Asia 2016 Attendees</a>, Source on <a href='https://github.com/dasjo/drupalcon-asia-2016-map'>github</a>");
+    });
+
+</script>
+</body>
+</html>
+
