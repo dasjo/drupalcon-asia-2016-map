@@ -11,21 +11,29 @@
     #map { position:absolute; top:0; bottom:0; width:100%; }
 
     .leaflet-marker-icon {
-      width: 34px;
-      height: 34px;
       margin-left: 3px;
       margin-top: 3px;
+      border: none;
+      background: none;
+    }
+    .leaflet-marker-icon:not(.marker-cluster) {
+      width: 50px !important;
+      height: 50px !important;
+    }
+    .leaflet-marker-icon.marker-cluster {
+      width: 34px;
+      height: 34px;
       border-radius: 17px;
     }
 
-    img.leaflet-marker-icon {
+    .leaflet-marker-icon img {
       border-radius: 10px;
       border: 3px solid #222;
-      height: 50px;
-      width: auto;
+      height: auto;
+      max-width: 100%;
       background-color: #bdd7d1;
     }
-    img.leaflet-marker-icon:hover {
+    .leaflet-marker-icon:hover img {
       border: 3px solid #fff;
       background-color: #f0f0f0;
     }
@@ -58,8 +66,9 @@
       e.target.eachLayer(function(layer) {
         var content = '<a href="' + layer.feature.properties.Link + '" target="_blank">' + layer.feature.properties["Name"] + '</a>';
         layer.bindPopup(content);
-        layer.setIcon(L.icon({
-          iconUrl: layer.feature.properties.Pic,
+        layer.setIcon(L.divIcon({
+          html: '<img src="' + layer.feature.properties.Pic + '" />',
+          class: 'my-div-icon'
         }));
         clusterGroup.addLayer(layer);
       });
